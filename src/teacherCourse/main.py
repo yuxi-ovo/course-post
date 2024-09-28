@@ -2,8 +2,9 @@ import json
 import urllib.request
 
 from bs4 import BeautifulSoup
+from loguru import logger
 
-from courseReptile.src.teacherCourse.db import saveCourse
+from src.teacherCourse.db import saveCourse
 
 a = {
     "老师名": {
@@ -79,18 +80,14 @@ def getTechTemplate(cookie):
     html = response.read().decode("utf-8")
 
     soup = BeautifulSoup(html, "html.parser")
-    techNameList = getTechNameLst(soup)
-    teacherCourseList = {}
-    for name in techNameList:
-        teacherCourseList[name] = {}
-        # print(name)
+    teacherCourseList = getTechNameLst(soup)
+
+    # print(name)
     getTeacherCourse(soup, teacherCourseList)
-    print("爬起老师课表数据成功")
+    logger.info("爬取老师课表数据成功")
     courseDataList = []
     tech_list = []
     for tName in teacherCourseList:
-        if tName in "刘婷":
-            print("教师名:", tName)
         tech_list.append((tName,))
         for week in teacherCourseList[tName]:
             # print("周次", week)
@@ -102,11 +99,12 @@ def getTechTemplate(cookie):
                 courseData = json.dumps(courseData, ensure_ascii=False)
                 courseDataList.append((tName, week, weekDay, courseData))
     saveCourse(courseDataList, tech_list)
-    print("保存老师课表数据成功!")
+    logger.info("保存老师课表数据成功!")
 
 
 def getTechNameLst(soup):
     techNameList = []
+    r = {}
     rowList = soup.find("table").findChildren("tr")[2:]
     liuTingIndex = 0
     for d in rowList:
@@ -117,7 +115,9 @@ def getTechNameLst(soup):
             techNameList.append(tech_name)
         else:
             techNameList.append(tech_name)
-    return techNameList
+    for name in techNameList:
+        r[name] = {}
+    return r
 
 
 def getTeacherCourse(soup, teacherCourseList):

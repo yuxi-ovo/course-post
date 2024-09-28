@@ -1,11 +1,14 @@
 import json
 import time
 import urllib.request
+from datetime import datetime
 
 import redis
 from bs4 import BeautifulSoup
+from loguru import logger
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from tqdm import tqdm
 
 from src.course.db import addUpdateCourseLog, saveCourse
 
@@ -77,27 +80,27 @@ def weekSort(arr):
     return r
 
 
-def getTemplate(cookie):
+def getTemplate(cookie="", template=""):
     url = 'https://jw.hniu.cn/jsxsd/kbcx/kbxx_xzb_ifr';
     head = {
         "cookie": f"bzb_jsxsd={cookie}",
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15"
     }
-    print(head)
-    request = urllib.request.Request(url, headers=head)
-    response = urllib.request.urlopen(request)
-    html = response.read().decode("utf-8")
+    logger.info("封装请求头成功")
+    if template != "":
+        html = template
+    else:
+        request = urllib.request.Request(url, headers=head)
+        response = urllib.request.urlopen(request)
+        html = response.read().decode("utf-8")
 
     soup = BeautifulSoup(html, "html.parser")
-    # 本地数据
-    # f = open("/Users/zhangrui/PycharmProjects/pythonProject/courseReptile/教师课表_个人中心.html", 'r')
-    # soup = BeautifulSoup(f.read(), "html.parser")
     courseList = getClass(soup)
     getClassCourse(courseList, soup)
-    print("爬取所有班级课表成功")
+    logger.info("爬取所有班级课表成功")
     courseDataList = []
     classList = []
-    for c in courseList:
+    for c in tqdm(courseList):
         # 班级
         classList.append((c,))
         for w in courseList[c]:
@@ -109,10 +112,12 @@ def getTemplate(cookie):
                 courseData = courseList[c][w][d]
                 courseData = json.dumps(courseData, ensure_ascii=False)
                 courseDataList.append((c, w, d, courseData))
-    print(classList)
-    saveCourse(courseDataList, classList)
-    addUpdateCourseLog("张瑞")
-    print("保存班级课表数据完成!")
+    if template != "":
+        return classList, courseDataList
+    else:
+        saveCourse(courseDataList, classList)
+        addUpdateCourseLog("张瑞")
+        logger.info("保存班级课表数据完成!")
 
 
 def getClass(template):
@@ -190,26 +195,11 @@ def addWeekCourse(courseList, className, weekDay, section, courseData):
     for i in weekData:
         temp = i.split("-")
         if len(temp) != 1:
-            print("连续的-1", temp)
             minWeek = temp[0].replace("周", "")
             maxWeek = temp[1].replace("周", "")
             addCourse(maxWeek, minWeek, courseList, className, weekDay, section, courseData)
         else:
-            print("单周-1", temp)
             addCourse(0, temp[0].replace("周", ""), courseList, className, weekDay, section, courseData)
-
-    # else:
-    #     for i in weekData:
-    #         temp = i.split("-")
-    #         if len(temp) != 1:
-    #             # print("单周连续的-2", temp)
-    #             minWeek = temp[0].replace("周", "")
-    #             maxWeek = temp[1].replace("周", "")
-    #             addCourse(maxWeek, minWeek, courseList, className, weekDay, section, courseData)
-    #         else:
-    #             # print("单独单周-2", temp)
-    #             minWeek = temp[0].replace("周", "")
-    #             addCourse(0, minWeek, courseList, className, weekDay, section, courseData)
 
 
 def addCourse(maxWeek, minWeek, courseList, className, weekDay, section, courseData):
@@ -237,4 +227,6 @@ def clearRedis():
                             db=0,  # 所访问的Redis的数据库编号
                             )
     redis_cli.flushdb()
-    print("清空redis缓存成功")
+    logger.info("清空redis缓存成功")
+
+    logger.success("更新课表成功！{}", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))

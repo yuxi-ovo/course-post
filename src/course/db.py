@@ -1,6 +1,7 @@
 import time
 
 import pymysql
+from loguru import logger
 
 # db = pymysql.connect(host='localhost', user='root', password='20050703', database='course')
 db = pymysql.connect(host="114.132.175.70", user="Course", password="NRNdLmpmWpx6jMRT", database='course')
@@ -10,7 +11,7 @@ cursor = db.cursor()
 def saveCourse(courseDataList, classList):
     sqlStr = "truncate class_course"
     cursor.execute(sqlStr)
-    print("清空数据成功")
+    logger.info("清空数据成功")
     sqlStr = "INSERT INTO `class_course`(`className`,`week`,`weekDay`,`courseList`) VALUES(%s, %s,%s,%s)"
     start = time.perf_counter()
     try:
@@ -21,7 +22,7 @@ def saveCourse(courseDataList, classList):
         db.close()
     sqlStr = "truncate class_list"
     cursor.execute(sqlStr)
-    print("清空班级列表数据成功")
+    logger.info("清空班级列表数据成功")
     sqlStr = "INSERT INTO `class_list`(`className`) VALUES(%s)"
     try:
         cursor.executemany(sqlStr, classList)
@@ -30,9 +31,9 @@ def saveCourse(courseDataList, classList):
         db.rollback()
         db.close()
     db.commit()
-    print("更新班级列表数据成功")
+    logger.info("更新班级列表数据成功")
     end = time.perf_counter()
-    print("保存学生课表数据用时：%.2f秒,数据条数为:%d" % (end - start, len(courseDataList)))
+    logger.info("保存学生课表数据用时：%.2f秒,数据条数为:%d" % (end - start, len(courseDataList)))
 
 
 def addUpdateCourseLog(author):
