@@ -12,17 +12,17 @@ from tqdm import tqdm
 
 from src.course.db import addUpdateCourseLog, saveCourse
 
-# a = {
-#     "软件2303班": {
-#         "第一周": {
-#             "星期一": {
-#                 "第一大节": {
-#                     "课程名"
-#                 }
-#             }
-#         }
-#     }
-# }
+a = {
+    "软件2303班": {
+        "第一周": {
+            "星期一": {
+                "第一大节": {
+                    "课程名"
+                }
+            }
+        }
+    }
+}
 
 
 def getCookie():
