@@ -1,13 +1,10 @@
 import json
-import time
 import urllib.request
 from datetime import datetime
 
 import redis
 from bs4 import BeautifulSoup
 from loguru import logger
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 from tqdm import tqdm
 
 from src.course.db import addUpdateCourseLog, saveCourse
@@ -25,56 +22,6 @@ a = {
 }
 
 
-def getCookie():
-    options = webdriver.FirefoxOptions()
-    # options.add_argument('--headless')
-    # 启动浏览器
-    driver = webdriver.Firefox(options=options)  # 如果你使用的是Firefox浏览器
-    # 打开登录页面
-    driver.get(
-        "https://authserver.hniu.cn/authserver/login?service=https%3A%2F%2Fehall.hniu.cn%3A443%2Flogin%3Fservice%3Dhttps%3A%2F%2Fehall.hniu.cn%2Fnew%2Findex.html%3Fbrowser%3Dno")
-
-    # 找到用户名输入框并输入账户
-    username_input = driver.find_element(By.ID, 'username')
-    username_input.send_keys("202315310305")
-
-    # 找到密码输入框并输入密码
-    password_input = driver.find_element(By.ID, 'password')
-    password_input.send_keys("20050703zrZR")
-
-    # 找到登录按钮并点击
-    login_button = driver.find_element(By.CLASS_NAME, 'auth_login_btn')
-    login_button.click()
-
-    system_button = driver.find_elements(By.CLASS_NAME, "widget-recommend-item")
-    system_button[0].click()
-
-    going_button = driver.find_element(By.ID, "ampDetailEnter")
-    going_button.click()
-
-    # 获取登录后的cookie
-    time.sleep(10)
-    search_window = driver.window_handles
-    driver.switch_to.window(search_window[1])
-    cookies = driver.get_cookies()
-    result = {
-        'bzb_jsxsd': '',
-        'sdp_app_session-443': '',
-        'sdp_app_session-legacy-443': '',
-    }
-    for c in cookies:
-        key = c.get('name')
-        if key in result:
-            result[key] = c.get('value')
-    driver.quit()
-    # logger.info("result:{}", result)
-    r = ''
-    for k, v in result.items():
-        r += f'{k}={v};'
-    logger.info("r:{}", r)
-    return r
-
-
 def weekSort(arr):
     r = {
         "星期一": {},
@@ -90,7 +37,7 @@ def weekSort(arr):
     return r
 
 
-def getTemplate(cookie="", template=""):
+def getTemplate(cookie="", template="", user='张瑞'):
     url = 'https://jw.hniu.cn/jsxsd/kbcx/kbxx_xzb_ifr';
     head = {
         "cookie": cookie,
@@ -105,7 +52,6 @@ def getTemplate(cookie="", template=""):
         request = urllib.request.Request(url, headers=head, method="POST", data=data)
         response = urllib.request.urlopen(request)
         html = response.read().decode("utf-8")
-    logger.info(html)
     soup = BeautifulSoup(html, "html.parser")
     courseList = getClass(soup)
     getClassCourse(courseList, soup)
@@ -128,7 +74,7 @@ def getTemplate(cookie="", template=""):
         return classList, courseDataList
     else:
         saveCourse(courseDataList, classList)
-        addUpdateCourseLog("张瑞")
+        addUpdateCourseLog(user)
         logger.info("保存班级课表数据完成!")
 
 

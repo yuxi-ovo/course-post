@@ -1,21 +1,24 @@
+import os
 import time
 from typing import List, Tuple
 
 import pymysql
+from dotenv import load_dotenv
 from loguru import logger
 
-config = {
+load_dotenv()
 
-}
-
-# db = pymysql.connect(host='localhost', user='root', password='20050703', database='Course')
-db = pymysql.connect(host="114.132.175.70", user="Course", password="NRNdLmpmWpx6jMRT", database='Course')
+print(os.getenv('MYSQL_PASSWORD'))
+db = pymysql.connect(host=os.getenv("MYSQL_HOST"),
+                     user=os.getenv('MYSQL_USER'),
+                     password=os.getenv('MYSQL_PASSWORD'),
+                     database=os.getenv('MYSQL_DATABASE'))
 cursor = db.cursor()
 
 
 def saveCourse(courseDataList: List[Tuple[str, str, str, str]], tech_list):
-    sqlStr = "truncate tech_course"
-    cursor.execute(sqlStr)
+    # sqlStr = "truncate tech_course"
+    # cursor.execute(sqlStr)
     logger.info("清空数据成功")
     sqlStr = "INSERT INTO `tech_course`(`tech_name`,`week`,`weekDay`,`courseList`) VALUES(%s, %s,%s,%s)"
     start = time.perf_counter()

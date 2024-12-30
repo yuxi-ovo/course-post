@@ -228,7 +228,6 @@ def addWeekCourse(courseList, teacherName, weekDay, section, courseData):
                 if '单' in temp[0]:
                     maxWeek = 0
                     minWeek = temp[0][0]
-                    print(minWeek)
                     addCourse(maxWeek, minWeek, courseList, teacherName, weekDay, section, courseData)
                     continue
                 addCourse(0, temp[0].replace("周", ""), courseList, teacherName, weekDay, section, courseData)
