@@ -1,20 +1,42 @@
-course-post
-===========
+# course-post
 
-### 一个python爬虫，用来获取课表数据并处理数据
+### 一个python爬虫，用来获取课表数据和解析数据
 
-### 需安装的Python外置库
+### 配置项目环境
 
-```shell
-pymysql logger json urllib.request datetime redis BeautifulSoup webdriver By tqdm pyfiglet
+#### 启动虚拟环境
+
+```powershell
+python -m venv .venv
 ```
 
-### 学生课表源代码地址
+</a>
 
-<a href='https://github.com/CourseTool/course-post/tree/main/src/course'>src/course</a>
+#### 激活虚拟环境
 
-### 老师课表源代码地址
+```powershell
+windows
+.\.venv\Scripts\Activate.ps1
+Macos
+source .venv/bin/activate
+```
 
-<a href='https://github.com/CourseTool/course-post/tree/main/src/teacherCourse'>src/teacherCourse</a>
+#### 安装依赖
+
+```shell
+pip install -r requirements.txt
+```
+
+#### 启动本地爬取课表
+
+```shell
+python main.py -local
+```
+
+#### 启动接口服务
+
+```shell
+python server.py
+```
 
 欢迎大家的贡献！！！🙏
