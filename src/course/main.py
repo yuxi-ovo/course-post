@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from loguru import logger
 from tqdm import tqdm
 
+from src.common.main import section, weekDay
 from src.course.db import addUpdateCourseLog, saveCourse
 
 a = {
@@ -95,10 +96,10 @@ def addClassWeek(classList, className):
 
 def getClassCourse(courseList, template):
     courseTemplate = template.find("table").findChildren("tr")[2:]
-    weekDay = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
-    weekDayIndex = 0
-    section = ["第一大节", "第二大节", "第三大节", "第四大节", "第五大节", "第六大节"]
-    sectionIndex = 0
+    # weekDay = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
+    # weekDayIndex = 0
+    # section = ["第一大节", "第二大节", "第三大节", "第四大节", "第五大节", "第六大节"]
+    # sectionIndex = 0
     for c in courseTemplate:
         courseDataList = c.findChildren("nobr")
         weekDayIndex = 0
@@ -196,3 +197,5 @@ def clearRedis():
     logger.info("清空redis缓存成功")
 
     logger.success("更新课表成功！{}", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+# 读取教务系统桌面个人课表

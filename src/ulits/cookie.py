@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 
 import pymysql
 from loguru import logger
@@ -64,6 +65,7 @@ def getCookie(username: str = '202315310305', password: str = '20050703zrZR'):
 
 
 def getCookieForServer(username: str = '202315310305', password: str = '20050703zrZR'):
+    logger.info("开始时间:{}", datetime.now())
     options = webdriver.ChromeOptions()
     # 开启无头模式
     options.add_argument("--headless")
@@ -117,6 +119,61 @@ def getCookieForServer(username: str = '202315310305', password: str = '20050703
     for k, v in resultMap.items():
         cookie += f'{k}={v};'
     logger.info("cookie:{}", cookie)
+    logger.info("结束时间:{}", datetime.now())
+    saveCookie(cookie)
+    return cookie
+
+
+def getCookieForServerV2(username: str = '202315310305', password: str = '20050703zrZR'):
+    now = datetime.now()
+    logger.info("开始时间:{}", now)
+    options = webdriver.ChromeOptions()
+    # 开启无头模式
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    # 启动浏览器
+    driver = webdriver.Chrome(options=options)  #
+    # 打开登录页面
+    # driver.get(
+    #     "https://authserver.hniu.cn/authserver/login?service=https%3A%2F%2Fehall.hniu.cn%3A443%2Flogin%3Fservice%3Dhttps%3A%2F%2Fehall.hniu.cn%2Fnew%2Findex.html%3Fbrowser%3Dno")
+    driver.get("http://jw.hniu.cn/sso.jsp")
+    time.sleep(1)
+    # 找到用户名输入框并输入账户
+    username_input = driver.find_element(By.ID, 'username')
+    username_input.send_keys(username)
+
+    # 找到密码输入框并输入密码
+    password_input = driver.find_element(By.ID, 'password')
+    password_input.send_keys(password)
+
+    # 找到登录按钮并点击
+    login_button = driver.find_element(By.CLASS_NAME, 'auth_login_btn')
+    login_button.click()
+    # driver.get("https://jw.hniu.cn/jsxsd/framework/xsMain.htmlx")
+
+    # 获取登录后的cookie
+    time.sleep(1)
+    # search_window = driver.window_handles
+    # driver.switch_to.window(search_window[1])
+    cookies = driver.get_cookies()
+    resultMap = {
+        'bzb_jsxsd': '',
+        'sdp_app_session-443': '',
+        'sdp_app_session-legacy-443': '',
+    }
+    for c in cookies:
+        key = c.get('name')
+        if key in resultMap:
+            resultMap[key] = c.get('value')
+    driver.quit()
+    cookie = ''
+    for k, v in resultMap.items():
+        cookie += f'{k}={v};'
+    logger.info("cookie:{}", cookie)
+    end = datetime.now()
+    logger.info("结束时间:{}", end)
+
+    logger.success("总耗时:{}", end - now)
     saveCookie(cookie)
     return cookie
 

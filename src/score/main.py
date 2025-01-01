@@ -2,13 +2,13 @@ import requests
 from bs4 import BeautifulSoup
 from loguru import logger
 
-from src.ulits.cookie import getCookieForServer
+from src.ulits.cookie import getCookieForServerV2
 
 
 def getScore(username: str, password: str):
     url = 'https://jw.hniu.cn/jsxsd/kscj/cjcx_list'
     # 桌面个人课表 https://jw.hniu.cn/jsxsd/framework/main_index_loadkb.htmlx?rq=2024-11-25&sjmsValue=&xnxqid=2024-2025-1
-    cookie = getCookieForServer(username, password)
+    cookie = getCookieForServerV2(username, password)
     head = {
         "Cookie": cookie,
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15"
@@ -16,7 +16,6 @@ def getScore(username: str, password: str):
     logger.info("封装请求头成功")
     # data = urllib.parse.urlencode({"xsfs": 'all'}).encode("utf-8")
     response = requests.post(url, headers=head)
-    print("html", response)
     html = response.text
 
     soup = BeautifulSoup(html, "html.parser")

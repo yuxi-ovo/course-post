@@ -3,6 +3,7 @@ from datetime import datetime
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from src.course.desktopCourse import getDesktopHtml
 from src.score.main import getScore
 
 app = FastAPI()
@@ -24,7 +25,12 @@ class Result:
         self.date = date
 
 
-@app.get("/score/")
+@app.get("/user/score")
 async def root(username: str, password: str):
     data = getScore(username, password)
     return Result(data=data)
+
+
+@app.get("/user/course")
+async def userCourse(username: str, password: str):
+    return getDesktopHtml(username, password)
