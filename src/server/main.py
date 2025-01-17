@@ -1,4 +1,6 @@
+import time
 from datetime import datetime
+from functools import wraps
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -17,13 +19,28 @@ app.add_middleware(
 
 
 class Result:
-    def __init__(self, data: list, code: int = 200, date=datetime.now(), msg: str = "请求成功", ):
+    def __init__(self, data: list, code: int = 200, currentTime=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                 msg: str = "请求成功", ):
         self.msg = msg
         self.data = data
         self.code = code
-        self.date = date
+        self.currentTime = currentTime
 
 
+def print_runtime(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        runtime = end_time - start_time
+        print(f"Function '{func.__name__}' executed in {runtime:.4f} seconds")
+        return result
+
+    return wrapper
+
+
+@print_runtime
 @app.get("/user/score")
 async def root(username: str, password: str):
     data = getScore(username, password)
