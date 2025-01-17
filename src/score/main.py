@@ -27,6 +27,8 @@ def getUnCourse(username: str, password: str):
     logger.info("封装请求头成功")
     # data = urllib.parse.urlencode({"xsfs": 'all'}).encode("utf-8")
     scoreList = getAllScore(head, 4)
+    global scoreIndex
+    scoreIndex = 0
     return scoreList
 
 
@@ -78,6 +80,7 @@ def analyze(html):
             if keyIndex >= len(keyMap):
                 keyIndex = 0
         scoreList.append(scoreData)
+    scoreIndex = 0
     return scoreList
 
 

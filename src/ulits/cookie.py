@@ -165,7 +165,6 @@ def getCookieForServerV2(username: str = '202315310305', password: str = '200507
 
         # 获取警告框的文本
         alert_text = alert.text
-        print(f"警告框内容: {alert_text}")
 
         # 关闭警告框
         alert.accept()  # 如果你想接受警告框

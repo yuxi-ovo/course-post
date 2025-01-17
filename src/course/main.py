@@ -94,6 +94,7 @@ def addClassWeek(classList, className):
         classList[className]["第{}周".format(i)] = {}
 
 
+# 解析课表数据
 def getClassCourse(courseList, template):
     courseTemplate = template.find("table").findChildren("tr")[2:]
     # weekDay = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
