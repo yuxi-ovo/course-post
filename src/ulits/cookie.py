@@ -5,6 +5,8 @@ import pymysql
 from loguru import logger
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 def getCookie(username: str = '202315310305', password: str = '20050703zrZR'):
@@ -37,7 +39,6 @@ def getCookie(username: str = '202315310305', password: str = '20050703zrZR'):
     system_button[4].click()
 
     going_button = driver.find_element(By.ID, "ampDetailEnter")
-    print(going_button.text)
     driver.execute_script("arguments[0].click();", going_button)
 
     # 获取登录后的cookie
@@ -155,6 +156,22 @@ def getCookieForServerV2(username: str = '202315310305', password: str = '200507
     time.sleep(1)
     # search_window = driver.window_handles
     # driver.switch_to.window(search_window[1])
+    try:
+        # 等待警告框出现
+        WebDriverWait(driver, 2).until(EC.alert_is_present())
+
+        # 获取警告框
+        alert = driver.switch_to.alert
+
+        # 获取警告框的文本
+        alert_text = alert.text
+        print(f"警告框内容: {alert_text}")
+
+        # 关闭警告框
+        alert.accept()  # 如果你想接受警告框
+        # alert.dismiss()  # 如果你想取消警告框
+    except Exception as e:
+        print(f"没有检测到警告框或出现其他错误: {e}")
     cookies = driver.get_cookies()
     resultMap = {
         'bzb_jsxsd': '',

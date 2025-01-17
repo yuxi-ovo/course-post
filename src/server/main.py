@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from src.course.desktopCourse import getDesktopHtml
-from src.score.main import getScore
+from src.score.main import getScore, getUnCourse
 
 app = FastAPI()
 
@@ -28,6 +28,12 @@ class Result:
 @app.get("/user/score")
 async def root(username: str, password: str):
     data = getScore(username, password)
+    return Result(data=data)
+
+
+@app.get("/user/unCourse")
+async def root(username: str, password: str):
+    data = getUnCourse(username, password)
     return Result(data=data)
 
 
