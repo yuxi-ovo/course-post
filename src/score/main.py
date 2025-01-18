@@ -61,8 +61,9 @@ scoreIndex = 1
 
 def analyze(html):
     scoreHtmlList = html.find("table", id='dataList').find_all('tr')[1:]
-    keyMap = ["序号", "开课日期", "课程性质", "课程编号", "课程名字", "成绩", "课程属性", "课程性质2", "课程学分",
-              "课程学时"]
+    # keyMap = ["序号", "开课日期", "课程性质", "课程编号", "课程名字", "成绩", "课程属性", "课程性质2", "课程学分",
+    #           "课程学时"]
+    keyMap = ["index", "startDate", "nature", "id", "name", "score", "type", "nature2", "credit"]
     keyIndex = 0
     scoreList = []
     global scoreIndex
